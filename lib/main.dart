@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-
-void main() => runApp(MaterialApp(home: QRViewExample()));
+import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:url_launcher/url_launcher.dart';
+void main() => runApp(MaterialApp(home: QRViewExample(),debugShowCheckedModeBanner: false,));
 
 bool _flashOn = true;
 bool _fronCam = true;
@@ -61,7 +62,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                         child: IconButton(
                           color: Colors.blue,
                           icon:
-                              Icon(_flashOn ? Icons.flash_on : Icons.flash_off),
+                              Icon(_flashOn ? Icons.flash_off : Icons.flash_on),
                           onPressed: () {
                             setState(() {
                               _flashOn = !_flashOn;
@@ -75,8 +76,8 @@ class _QRViewExampleState extends State<QRViewExample> {
                         child: IconButton(
                           color: Colors.blue,
                           icon: Icon(_fronCam
-                              ? Icons.camera_front
-                              : Icons.camera_rear),
+                              ? Icons.camera_rear
+                              : Icons.camera_front),
                           onPressed: () {
                             setState(() {
                               _fronCam = !_fronCam;
@@ -168,8 +169,19 @@ class _QRViewExampleState extends State<QRViewExample> {
                           Padding(
                             padding:
                                 const EdgeInsets.only(left: 30.0, right: 30.0),
-                            child: SelectableText('$qrText',
-                                textAlign: TextAlign.left),
+                            child: 
+                            SelectableLinkify(
+                              onOpen: (link) async {
+                                if (await canLaunch(link.url)) {
+                                    await launch(link.url);
+                                  } else {
+                                    throw 'Could not launch $link';
+                                  }
+                              },
+                              text: '$qrText',
+                            ),
+                            // SelectableText('$qrText',
+                            //     textAlign: TextAlign.left),
                           )
                         ])),
                   ]),
